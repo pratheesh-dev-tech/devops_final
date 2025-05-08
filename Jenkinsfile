@@ -4,8 +4,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                sudo rm -rf /home/ubuntu/app &&
-                git clone https://github.com/pratheesh-dev-tech/devops_final.git /home/ubuntu/app
+                    sudo rm -rf /var/lib/jenkins/app
+                    sudo git clone https://github.com/pratheesh-dev-tech/devops_final.git /var/lib/jenkins/app
                 '''
             }
         }
