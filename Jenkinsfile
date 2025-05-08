@@ -1,30 +1,28 @@
 pipeline {
     agent any
 
-    environment {
-        GIT_REPO = "https://github.com/pratheesh-dev-tech/devops_final.git"
-        DEPLOY_DIR = "/var/www/html"
-    }
-
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'main', url: "${GIT_REPO}"
+                git 'https://github.com/pratheesh-dev-tech/devops_final.git'
             }
         }
 
         stage('Deploy') {
             steps {
-                sh '''
-                    # Remove old files
-                    sudo rm -rf ${DEPLOY_DIR}/*
+                script {
+                    // Remove old files from web directory
+                    sh 'sudo rm -rf /var/www/html/*'
                     
-                    # Clone repo to temp location
-                    git clone ${GIT_REPO} /tmp/app
-
-                    # Copy files to Nginx directory
-                    sudo cp -r /tmp/app/* ${DEPLOY_DIR}/
-                '''
+                    // Clone again into temporary folder (or use workspace)
+                    sh 'git clone https://github.com/pratheesh-dev-tech/devops_final.git /tmp/app'
+                    
+                    // Move the necessary web files to the nginx directory
+                    sh 'sudo mv /tmp/app/css /tmp/app/js /tmp/app/images /tmp/app/fonts /tmp/app/*.html /var/www/html/'
+                    
+                    // Set ownership so nginx can access
+                    sh 'sudo chown -R www-data:www-data /var/www/html'
+                }
             }
         }
     }
